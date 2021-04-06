@@ -14,18 +14,18 @@ CC_SRC_LANGUAGE=${1:-"go"}
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 if [ "$CC_SRC_LANGUAGE" = "go" -o "$CC_SRC_LANGUAGE" = "golang"  ]; then
 	CC_RUNTIME_LANGUAGE=golang
-	CC_SRC_PATH=github.com/chaincode/fabcar/go
+	CC_SRC_PATH=github.com/chaincode/car/go
 elif [ "$CC_SRC_LANGUAGE" = "java" ]; then
 	CC_RUNTIME_LANGUAGE=java
-	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/fabcar/java
+	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/car/java
 elif [ "$CC_SRC_LANGUAGE" = "javascript" ]; then
 	CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
-	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/fabcar/javascript
+	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/car/javascript
 elif [ "$CC_SRC_LANGUAGE" = "typescript" ]; then
 	CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
-	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/fabcar/typescript
+	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/car/typescript
 	echo Compiling TypeScript code into JavaScript ...
-	pushd ../chaincode/fabcar/typescript
+	pushd ../chaincode/car/typescript
 	npm install
 	npm run build
 	popd
@@ -61,7 +61,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n car \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -74,7 +74,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n car \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -87,7 +87,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n car \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -100,20 +100,20 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n car \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
 
-echo "Instantiating smart contract on mychannel"
+echo "Instantiating smart contract on mycar"
 docker exec \
   -e CORE_PEER_LOCALMSPID=Org1MSP \
   -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH} \
   cli \
   peer chaincode instantiate \
     -o orderer.example.com:7050 \
-    -C mychannel \
-    -n fabcar \
+    -C mycar \
+    -n car \
     -l "$CC_RUNTIME_LANGUAGE" \
     -v 1.0 \
     -c '{"Args":[]}' \
@@ -126,7 +126,7 @@ docker exec \
 echo "Waiting for instantiation request to be committed ..."
 sleep 10
 
-echo "Submitting initLedger transaction to smart contract on mychannel"
+echo "Submitting initLedger transaction to smart contract on mycar"
 echo "The transaction is sent to all of the peers so that chaincode is built before receiving the following requests"
 docker exec \
   -e CORE_PEER_LOCALMSPID=Org1MSP \
@@ -134,8 +134,8 @@ docker exec \
   cli \
   peer chaincode invoke \
     -o orderer.example.com:7050 \
-    -C mychannel \
-    -n fabcar \
+    -C mycar \
+    -n car \
     -c '{"function":"initLedger","Args":[]}' \
     --waitForEvent \
     --tls \
@@ -154,8 +154,8 @@ cat <<EOF
 
 Total setup execution time : $(($(date +%s) - starttime)) secs ...
 
-Next, use the FabCar applications to interact with the deployed FabCar contract.
-The FabCar applications are available in multiple programming languages.
+Next, use the car applications to interact with the deployed car contract.
+The car applications are available in multiple programming languages.
 Follow the instructions for the programming language of your choice:
 
 JavaScript:
@@ -168,7 +168,7 @@ JavaScript:
 
   Then run the following applications to enroll the admin user, and register a new user
   called user1 which will be used by the other applications to interact with the deployed
-  FabCar contract:
+  car contract:
     node enrollAdmin
     node registerUser
 
@@ -193,7 +193,7 @@ TypeScript:
 
   Then run the following applications to enroll the admin user, and register a new user
   called user1 which will be used by the other applications to interact with the deployed
-  FabCar contract:
+  car contract:
     node dist/enrollAdmin
     node dist/registerUser
 
