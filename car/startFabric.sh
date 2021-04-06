@@ -14,7 +14,7 @@ CC_SRC_LANGUAGE=${1:-"go"}
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 if [ "$CC_SRC_LANGUAGE" = "go" -o "$CC_SRC_LANGUAGE" = "golang"  ]; then
 	CC_RUNTIME_LANGUAGE=golang
-	CC_SRC_PATH=github.com/chaincode
+	CC_SRC_PATH=github.com/chaincode/car/go
 elif [ "$CC_SRC_LANGUAGE" = "java" ]; then
 	CC_RUNTIME_LANGUAGE=java
 	CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/car/java
@@ -42,7 +42,7 @@ fi
 rm -rf ./hfc-key-store
 
 # launch network; create channel and join peer to channel
-cd ../first-network
+cd ../network
 echo y | ./byfn.sh down
 echo y | ./byfn.sh up -a -n -s couchdb
 
